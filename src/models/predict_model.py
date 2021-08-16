@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import pickle
 import json
+import numpy as np
 import xgboost as xgb
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
@@ -78,7 +79,8 @@ def main(input_filepath, model_filepath, testfile):
     model = pickle.load(open(os.path.join(model_filepath, "xgb_model.dat"), "rb"))
 
     logging.info('Make model predictions')
-    y_pred = model.predict(X)
+    log_y_pred = model.predict(X)
+    y_pred = np.exp(log_y_pred)
     result = metric(y_pred, y.to_numpy().flatten())
 
     logger.info(f'Model performance RMSPE: {result}%')
